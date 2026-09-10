@@ -30,7 +30,8 @@ COPY prisma ./prisma
 COPY prisma.config.ts ./
 COPY .env.example ./
 
-RUN addgroup -S uakari && adduser -S uakari -G uakari
+RUN addgroup -S uakari && adduser -S uakari -G uakari \
+  && chown -R uakari:uakari /app
 USER uakari
 
 EXPOSE 3000
