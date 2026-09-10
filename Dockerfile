@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apk add --no-cache openssl libc6-compat
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --no-audit --no-fund --ignore-scripts
 
 COPY prisma ./prisma
 COPY prisma.config.ts ./
@@ -23,7 +23,7 @@ ENV NODE_ENV=production
 RUN apk add --no-cache openssl libc6-compat
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm install --omit=dev --no-audit --no-fund --ignore-scripts && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 COPY prisma ./prisma
