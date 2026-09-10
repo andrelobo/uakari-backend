@@ -1,0 +1,73 @@
+services:
+  api:
+    build: .
+    container_name: uakari-api
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-uakari}:${POSTGRES_PASSWORD:-uakari}@postgres:5432/${POSTGRES_DB:-uakari}
+      REDIS_URL: redis://redis:6379
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET is required}
+      DRAFT_MODE: ${DRAFT_MODE:-true}
+    networks:
+      - uakari-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/v1/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: uakari-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-uakari}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-uakari}
+      POSTGRES_DB: ${POSTGRES_DB:-uakari}
+    ports:
+      - "5433:5432"
+    volumes:
+      - uakari-postgres-data:/var/lib/postgresql/data
+    networks:
+      - uakari-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uakari} -d ${POSTGRES_DB:-uakari}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: uakari-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6380:6379"
+    volumes:
+      - uakari-redis-data:/data
+    networks:
+      - uakari-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  uakari-network:
+    driver: bridge
+
+volumes:
+  uakari-postgres-data:
+  uakari-redis-data:
