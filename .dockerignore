@@ -7,4 +7,4 @@ coverage
 test
 src/generated
 node_modules
-.env*
+.env
