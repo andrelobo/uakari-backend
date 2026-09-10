@@ -6,14 +6,34 @@ Plataforma de comércio eletrônico para venda de peças, construída pela **Mui
 - **Backend:** NestJS 12 + TypeScript + PostgreSQL (Prisma 7) + Redis
 - **Frontend:** Vue 3 + Vite + Pinia + Tailwind CSS
 - **Pagamentos:** Stripe + PayPal (arquitetura desacoplada via `PaymentProvider`)
-- **Deploy:** Frontend → Vercel · Backend → VPS (Docker Compose)
+- **Deploy:** Frontend → Vercel (✅ no ar) · Backend → VPS `lobojow` (imagem pronta, aguardando RAM)
+
+## Estado atual (2026-09-10)
+
+- **Milestone 0** ✅ e **Milestone 1** ✅ — foundation entregue: schema Prisma + migration aplicada,
+  logging (pino), erros consistentes, segurança (helmet + rate limit), health, Docker, testes.
+- **Frontend** no ar em https://uakari-frontend.vercel.app (storefront base, deploy Vercel).
+- **Backend producão:** imagem `uakari-api:latest` validada localmente; rota Caddy
+  `https://uakari-api.136-248-90-172.nip.io` registrada no VPS (retorna 502 até subir o serviço).
+  Deploy no VPS **bloqueado**: o box tem só 952MiB de RAM (já hospeda zera/climate/muirakitan/
+  portainer) e o `docker load` da imagem (≈253MB) é OOM-killed. Decisão: adiar deploy e seguir o roadmap.
 
 ## Repositórios
 
 | Aplicação | Repo | Endereço de produção |
 |---|---|---|
-| Backend (API) | `andrelobo/uakari-backend` | https://api-uakari.<dominio>/api/v1 |
-| Frontend (Store) | `andrelobo/uakari-frontend` | Vercel |
+| Backend (API) | `andrelobo/uakari-backend` | https://uakari-api.136-248-90-172.nip.io/api/v1 (pendente) |
+| Frontend (Store) | `andrelobo/uakari-frontend` | https://uakari-frontend.vercel.app ✅ |
+
+## Infra de produção (VPS `lobojow`)
+
+- Caddy (container `climate-caddy`) faz HTTPS automático via subdomínios `*.136-248-90-172.nip.io`.
+- O backend deve anexar-se à rede Docker externa `climate-backend_climate` e ser apontado no
+  Caddyfile como `reverse_proxy uakari-api:3000`.
+- **Porta 3000 no host já é usada** pelo `zera-backend-api` — o `uakari-api` NÃO publica porta no
+  host; fica acessível apenas via rede interna + Caddy.
+- Compose de produção: `/opt/uakari-backend/docker-compose.yml` no VPS (postgres/redis sem porta
+  publicada; API sem porta publicada). `.env` com secrets no mesmo diretório.
 
 ## Documentação
 

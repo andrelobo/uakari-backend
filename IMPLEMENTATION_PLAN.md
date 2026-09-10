@@ -6,10 +6,10 @@ Roadmap por milestones. Executar sequencialmente; cada milestone exige
 | # | Milestone | Entrega |
 |---|---|---|
 | 0 | Discovery | PROJECT_SPEC, ARCHITECTURE, IMPLEMENTATION_PLAN ✅ |
-| 1 | Foundation | Config, Prisma, migrations, logging, errors, security, health, Docker, testes ✅/em curso |
+| 1 | Foundation | Config, Prisma, migrations, logging, errors, security, health, Docker, testes ✅ |
 | 2 | Auth / Users | register, login, refresh, logout, recovery, RBAC, customers |
 | 3 | Products | products, categories, inventory, search, filters, paginação |
-| 4 | Customer frontend | auth UI, catálogo, produto, conta, endereços |
+| 4 | Customer frontend | auth UI, catálogo, produto, conta, endereços (storefront base já está no ar na Vercel) |
 | 5 | Cart | carrinho, itens, quantidade, totais, validação de estoque |
 | 6 | Checkout | endereço, cupom, validação de preço, criação de order (pagamento mock) |
 | 7 | Payments | abstração, Stripe, PayPal, webhooks, idempotência, states |
@@ -17,6 +17,14 @@ Roadmap por milestones. Executar sequencialmente; cada milestone exige
 | 9 | Admin | dashboard, CRUD produtos/estoque/pedidos/clientes/cupons/pagamentos/entregas |
 | 10 | Recommendations | popular, related, recentes, frequentes (heurística) |
 | 11 | Hardening | security/performance review, índices, acessibilidade, cobertura, config produção |
+
+## Status
+
+- ✅ M0 (Discovery) e ✅ M1 (Foundation) — lint + test + build verdes; migration `20260910153335_init` aplicada.
+- **Frontend:** storefront base (Vue 3) buildado e **no ar em https://uakari-frontend.vercel.app**
+  (mantém o espírito do M4; as features de cada milestone ainda dependem do backend).
+- **Backend prod:** imagem Docker validada; rota Caddy registrada; deploy no VPS `lobojow`
+  **adiado por limite de RAM** (952MiB). Ver `AGENTS.md` (Build de produção / Deploy no VPS).
 
 ## Skills mapeadas
 
